@@ -77,15 +77,15 @@ class GridUniverseEnv(gym.Env):
         self.wall_grid = np.zeros(self.world.shape)
         self._generate_walls(walls)
         # set reward matrix
-        self.reward_matrix = np.full(self.world.shape, -1)
+        self.reward_matrix = np.full(self.world.shape, -0.04)
         for terminal_state in self.goal_states:
             try:
-                self.reward_matrix[terminal_state] = 10
+                self.reward_matrix[terminal_state] = 1
             except IndexError:
                 raise IndexError("Terminal goal state {} is out of grid bounds or is wrong type. Should be an integer.".format(terminal_state))
         for terminal_state in self.lava_states:
             try:
-                self.reward_matrix[terminal_state] = -10
+                self.reward_matrix[terminal_state] = -1
             except IndexError:
                 raise IndexError("Lava terminal state {} is out of grid bounds or is wrong type. Should be an integer.".format(terminal_state))
         # self.reward_range = [-inf, inf] # default values already
@@ -173,7 +173,7 @@ class GridUniverseEnv(gym.Env):
     def is_terminal_goal(self, state):
         return True if state in self.goal_states else False
 
-    def _step(self, action):
+    def step(self, action):
         """
         Moves the agent one step according to the given action.
         """
@@ -184,7 +184,7 @@ class GridUniverseEnv(gym.Env):
             self.last_n_states.pop(0)
         return self.current_state, reward, self.done, self.info
 
-    def _reset(self):
+    def reset(self):
         self.done = False
         self.previous_state = self.current_state = self.initial_state = random.choice(self.starting_states)
         self.last_n_states = []
